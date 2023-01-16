@@ -24,6 +24,7 @@ and `.env.development` will include:
 PGDATABASE=nc_news
 ```
 - Ensure that you install `dotenv` as a dependency. 
+- Add your `.env` files to your .gitignore file.
 
 
 
