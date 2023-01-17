@@ -77,7 +77,6 @@ describe('/api/articles', () => {
                     countCommentsObj[value] = (countCommentsObj[value]||0 ) + 1
                 });
                  const comObjKeys = Object.keys(countCommentsObj);
-                 console.log(comObjKeys, '<obj keys')
                     const numComKeys = comObjKeys.map((key) => {
                         return parseInt(key)
                     })
@@ -93,4 +92,47 @@ describe('/api/articles', () => {
             });
         });
     });
+})
+
+describe('/api/articles/:article_id', () => {
+    describe('GET articles by article ID', () => {
+        test('returns the specified article', () => {
+            return request(app).get('/api/articles/2')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.article_id).toBe(2)
+            });
+        });
+        test('returns an object with all of the specified properties', () => {
+            return request(app).get('/api/articles/3')
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toHaveProperty('author');
+                expect(body).toHaveProperty('title');
+                expect(body).toHaveProperty('article_id');
+                expect(body).toHaveProperty('body');
+                expect(body).toHaveProperty('topic');
+                expect(body).toHaveProperty('created_at');
+                expect(body).toHaveProperty('votes');
+                expect(body).toHaveProperty('article_img_url');
+            });
+        });
+        test('returns a 404 for an article with an ID which does not exist', () => {
+            return request(app).get('/api/articles/9001')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Not Found")
+            });
+        });
+    });
+});
+
+describe('/api/invalid_path', () => {
+    test('Returns a 404 error if an invalid path is entered', () => {
+        return request(app).get('/api/invalid-path')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Path Not Found")
+        })
+    })
 })

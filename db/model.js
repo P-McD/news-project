@@ -34,5 +34,20 @@ const fetchArticles = () => {
     });
 };
 
+const fetchArtById = (article_id) => {
+const fetchArtIdStr = `
+SELECT * from articles
+WHERE article_id = $1;
+`;
+return db.query(fetchArtIdStr, [article_id])
+.then(({rows}) => {
+    if (rows.length > 0) {
+        return rows[0];
+    } else {
+        return Promise.reject({status : 404, msg : "Not Found"})
+    };
+});
+};
 
-module.exports = { fetchTopics, fetchArticles };
+
+module.exports = { fetchTopics, fetchArticles, fetchArtById };
