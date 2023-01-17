@@ -1,5 +1,6 @@
 
-const db = require("../db/connection")
+const db = require("./db/connection");
+const articles = require("./db/data/test-data/articles");
 
 const fetchTopics = () => {
     let fetchTopicsStr = `
@@ -49,5 +50,15 @@ return db.query(fetchArtIdStr, [article_id])
 });
 };
 
+const fetchComByArt = (article_id) => {
+    const comByArtStr = `
+    SELECT * FROM comments
+    WHERE article_id = $1;
+    `;
+    return db.query(comByArtStr, [article_id])
+    .then(({ rows }) => {
+        return rows 
+    });
+};
 
-module.exports = { fetchTopics, fetchArticles, fetchArtById };
+module.exports = { fetchTopics, fetchArticles, fetchArtById, fetchComByArt};
