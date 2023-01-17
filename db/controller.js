@@ -1,5 +1,6 @@
 const { 
-    fetchTopics
+    fetchTopics,
+    fetchArticles
 } = require('./model');
 
 const getTopics = (request, response, next) => {
@@ -11,6 +12,15 @@ const getTopics = (request, response, next) => {
     });
 };
 
+const getArticles = (request, response, next) => {
+    fetchArticles().then((articles) => {
+        response.status(200).send(articles)
+    })
+    .catch((err) => {
+        next(err)
+    });
+};
 module.exports = {
-    getTopics
+    getTopics,
+    getArticles
 };
