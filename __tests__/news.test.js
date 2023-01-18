@@ -132,7 +132,7 @@ describe('/api/invalid_path', () => {
         return request(app).get('/api/invalid-path')
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("Path Not Found")
+            expect(body.msg).toBe("Not Found")
         })
     })
 })
@@ -183,4 +183,52 @@ describe('/api/articles/:article_id/comments', () => {
             });
         });
     });
+    describe('POST comments by article id', () => {
+        test('returns a newly posted comment when passed a valid new comment and a valid article id', () => {
+            return request(app).post('/api/articles/3/comments')
+            .expect(200)
+            .send({ 
+                username : 'rogersop',
+                body: 'ello'
+            })
+            .then(({body}) => {
+                expect(body[0]).toMatchObject({
+                    comment_id : expect.any(Number),
+                    body: 'ello',
+                    article_id : 3,
+                    author : 'rogersop',
+                    votes: expect.any(Number),
+                    created_at : expect.any(String)
+                })
+            })
+        })
+        test('returns a 400 error if an attempt is made to post without either a username or body key', () => {
+            return request(app).post('/api/articles/2/comments')
+            .expect(400)
+            .send({
+                body : "I'll try sending this message anonymously"
+            })
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request");
+            });
+        });
+        test('returns a 400 error if an attempt is made to post without any comment', () => {
+            return request(app).post('/api/articles/2/comments')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request");
+            });
+        });
+        test('returns a 404 error if the username is not found', () => {
+            return request(app).post('/api/articles/2/comments')
+            .expect(404)
+            .send({
+                username : 'newguy',
+                body : "I'll try and post a comment"
+            })
+            .then(({body}) => {
+                expect(body.msg).toBe("Not Found");
+            });
+        })
+    })
 });
