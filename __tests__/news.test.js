@@ -230,5 +230,16 @@ describe('/api/articles/:article_id/comments', () => {
                 expect(body.msg).toBe("Not Found");
             });
         })
+        test('returns a 404 error if the article is not found', () => {
+            return request(app).post('/api/articles/9001/comments')
+            .expect(404)
+            .send({
+                username : 'rogersop',
+                body : "I wonder if this article exists?"
+            })
+            .then(({body}) => {
+                expect(body.msg).toBe("Not Found");
+            });
     })
+})
 });

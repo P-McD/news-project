@@ -63,11 +63,22 @@ const fetchComByArt = (article_id) => {
 };
 
 const createComment = (article_id, sentComment) => {
+
     
     if(!sentComment || !sentComment.body || !sentComment.username) {
         return Promise.reject({status : 400, msg: "Bad Request"})
     };
-
+    const doesArticleExistStr = `
+    SELECT * FROM articles
+    WHERE article_id = $1;
+    `;
+    return db.query(doesArticleExistStr, [article_id])
+    .then(({rows}) => {
+        if (rows.length === 0) {
+            return Promise.reject({status : 404, msg : "Not Found"})
+        };
+    })
+    .then(() => {
     const commentData = [sentComment.username, sentComment.body, article_id];
     const usernameData = sentComment.username;
     const doesUserExistStr = `
@@ -75,6 +86,7 @@ const createComment = (article_id, sentComment) => {
     WHERE username = $1;
     `;
     return db.query(doesUserExistStr, [usernameData])
+
     .then(({rows}) => {
         if (rows.length === 0) {
             return Promise.reject({status : 404, msg : "Not Found"})
@@ -92,6 +104,7 @@ const createComment = (article_id, sentComment) => {
         return rows;
         });
     });
+})
 };
 
  

@@ -49,10 +49,9 @@ const getComByArt = (request, response, next) => {
 const postComment = (request, response, next) => {
     const {article_id} = request.params;
     const sentComment  = request.body;
-    Promise.all([fetchArtById(article_id), createComment(article_id, sentComment)])
+    createComment(article_id, sentComment)
     .then((returnedObj) => {
-
-        response.status(200).send(returnedObj[1])
+        response.status(200).send(returnedObj)
     })
     .catch((err) => {
         next(err)
