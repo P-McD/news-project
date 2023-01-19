@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
-const { getTopics, getArticles, getArticleById, getCommentByArticle }  = require("./controller")
+const { getTopics, getArticles, getArticleById, getCommentByArticle, postComment }  = require("./controller")
 
 app.use(express.json());
+
+///GET///
 
 app.get('/api/topics', getTopics);
 
@@ -12,8 +14,15 @@ app.get('/api/articles/:article_id', getArticleById);
 
 app.get('/api/articles/:article_id/comments', getCommentByArticle);
 
+///POST///
+
+app.post('/api/articles/:article_id/comments', postComment)
+
+
+///MIDDLEWARE///
+
 app.use((request, response, next) => {
-    response.status(404).send({msg : "Path Not Found"})
+    response.status(404).send({msg : "Not Found"})
 })
 
 app.use((err, request, response, next) => {

@@ -2,7 +2,8 @@ const {
     fetchTopics,
     fetchArticles,
     fetchArticleById,
-    fetchCommentByArticle
+    fetchCommentByArticle,
+    createComment
 
 } = require('./model');
 
@@ -45,9 +46,21 @@ const getCommentByArticle = (request, response, next) => {
     });
 };
 
+const postComment = (request, response, next) => {
+    const {article_id} = request.params;
+    const sentComment  = request.body;
+    createComment(article_id, sentComment)
+    .then((returnedObj) => {
+        response.status(201).send(returnedObj)
+    })
+    .catch((err) => {
+        next(err)
+    });
+};
 module.exports = {
     getTopics,
     getArticles,
     getArticleById,
-    getCommentByArticle
+    getCommentByArticle,
+    postComment
 };
