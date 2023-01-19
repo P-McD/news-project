@@ -35,7 +35,7 @@ const fetchArticles = () => {
     });
 };
 
-const fetchArtById = (article_id) => {
+const fetchArticleById = (article_id) => {
 const fetchArtIdStr = `
 SELECT * from articles
 WHERE article_id = $1;
@@ -50,15 +50,29 @@ return db.query(fetchArtIdStr, [article_id])
 });
 };
 
-const fetchComByArt = (article_id) => {
-    const comByArtStr = `
-    SELECT * FROM comments
+const fetchCommentByArticle = (article_id) => {
+     if(isNaN(article_id)) {
+       return Promise.reject({status : 400, msg : "Bad Request"})
+    };
+    const doesArticleExistStr = `
+    SELECT * FROM articles
     WHERE article_id = $1;
     `;
-    return db.query(comByArtStr, [article_id])
-    .then(({ rows }) => {
-        return rows 
+    return db.query(doesArticleExistStr, [article_id])
+    .then(({rows}) => {
+        if (rows.length === 0) {
+            return Promise.reject({status : 404, msg : "Not Found"})
+        };
+    }) .then(() => {
+        const comByArtStr = `
+        SELECT * FROM comments
+        WHERE article_id = $1;
+        `;
+        return db.query(comByArtStr, [article_id])
+        .then(({ rows }) => {
+            return rows;
+        });
     });
 };
 
-module.exports = { fetchTopics, fetchArticles, fetchArtById, fetchComByArt};
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentByArticle};
