@@ -1,8 +1,8 @@
 const { 
     fetchTopics,
     fetchArticles,
-    fetchArtById,
-    fetchComByArt,
+    fetchArticleById,
+    fetchCommentByArticle,
     createComment
 
 } = require('./model');
@@ -25,9 +25,9 @@ const getArticles = (request, response, next) => {
     });
 };
 
-const getArtById = (request, response, next) => {
+const getArticleById = (request, response, next) => {
     const { article_id } = request.params;
-    fetchArtById(article_id).then((article) => {
+    fetchArticleById(article_id).then((article) => {
         response.status(200).send(article)
     })
     .catch((err) => {
@@ -35,11 +35,11 @@ const getArtById = (request, response, next) => {
     });
 };
 
-const getComByArt = (request, response, next) => {
+const getCommentByArticle = (request, response, next) => {
     const { article_id } = request.params;
-    Promise.all([fetchArtById(article_id), fetchComByArt(article_id)])
-    .then((commentArr) => {
-        response.status(200).send(commentArr[1])
+    fetchCommentByArticle(article_id)
+    .then((returnedComment) => {
+        response.status(200).send(returnedComment)
     })
     .catch((err) => {
         next(err)
@@ -60,8 +60,7 @@ const postComment = (request, response, next) => {
 module.exports = {
     getTopics,
     getArticles,
-    getArtById,
-    getComByArt,
+    getArticleById,
+    getCommentByArticle,
     postComment
 };
-

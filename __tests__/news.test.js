@@ -146,7 +146,7 @@ describe('/api/articles/:article_id/comments', () => {
                 body.forEach((comment) => {
                     expect(comment).toEqual(expect.objectContaining({
                         article_id: 1
-                    }))
+                    }));
                 });
             });
         });
@@ -162,24 +162,29 @@ describe('/api/articles/:article_id/comments', () => {
                         created_at : expect.any(String),
                         author : expect.any(String),
                         body : expect.any(String)
-
-
-                    })
-                })
-            })
-        })
+                    });
+                });
+            });
+        });
         test('returns a status of 200 and an empty array if given an article id which exists but has no comments', () => {
             return request(app).get('/api/articles/2/comments')
             .expect(200)
             .then(({body}) => {
                 expect(body.length).toBe(0)
-            })
-        })
+            });
+        });
         test(`uses an extra verification step to return a status of 404 if article id doesn't exist`, () => {
             return request(app).get('/api/articles/9001/comments')
             .expect(404)
             .then(({body}) => {
                 expect(body.msg).toBe("Not Found")
+            });
+        });
+        test(`uses an extra verification step to return a status of 400 if article id is not a number`, () => {
+            return request(app).get('/api/articles/cats/comments')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request")
             });
         });
     });
