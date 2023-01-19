@@ -107,6 +107,7 @@ describe('/api/articles', () => {
             return request(app).get('/api/articles?sort_by=title')
             .expect(200)
             .then(({body}) => {
+                expect(body.length).not.toBe(0);
                 expect(body).toBeSortedBy('title', {descending : true})
             });
         });
@@ -114,6 +115,7 @@ describe('/api/articles', () => {
             return request(app).get('/api/articles?sort_by=author&order=ASC')
             .expect(200)
             .then(({body}) => {
+                expect(body.length).not.toBe(0);
                 expect(body).toBeSortedBy('author', {descending : false})
             });
         });
@@ -121,6 +123,7 @@ describe('/api/articles', () => {
             return request(app).get('/api/articles?sort_by=author&order=ASC&topic=cats')
             .expect(200)
             .then(({body}) => {
+                expect(body.length).toBe(1);
                 body.forEach((article) => {
                     expect(article.topic).toBe('cats')
                 })
