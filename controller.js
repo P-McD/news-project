@@ -51,7 +51,7 @@ const postComment = (request, response, next) => {
     const sentComment  = request.body;
     createComment(article_id, sentComment)
     .then((returnedObj) => {
-        response.status(200).send(returnedObj)
+        response.status(201).send(returnedObj)
     })
     .catch((err) => {
         next(err)

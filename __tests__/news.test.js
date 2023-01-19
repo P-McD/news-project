@@ -186,7 +186,7 @@ describe('/api/articles/:article_id/comments', () => {
     describe('POST comments by article id', () => {
         test('returns a newly posted comment when passed a valid new comment and a valid article id', () => {
             return request(app).post('/api/articles/3/comments')
-            .expect(200)
+            .expect(201)
             .send({ 
                 username : 'rogersop',
                 body: 'ello'
