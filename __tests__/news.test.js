@@ -1,8 +1,8 @@
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const request = require("supertest");
-const app = require("../db/app");
-const response = require("../db/app");
+const app = require("../app");
+const response = require("../app");
 const testData = require("../db/data/test-data")
 const sorted = require("jest-sorted");
 
@@ -136,3 +136,56 @@ describe('/api/invalid_path', () => {
         })
     })
 })
+
+describe('/api/articles/:article_id/comments', () => {
+    describe('GET comments by article id', () => {
+        test('returns a status of 200 and an array of comments for the given article id if there are comments present', () => {
+            return request(app).get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+                body.forEach((comment) => {
+                    expect(comment).toEqual(expect.objectContaining({
+                        article_id: 1
+                    }));
+                });
+            });
+        });
+        test('returns comment objects with the appropriate properties', () => {
+            return request(app).get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+                body.forEach((comment) => {
+                    expect(comment).toMatchObject({
+                        article_id : 1,
+                        comment_id : expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at : expect.any(String),
+                        author : expect.any(String),
+                        body : expect.any(String)
+                    });
+                });
+            });
+        });
+        test('returns a status of 200 and an empty array if given an article id which exists but has no comments', () => {
+            return request(app).get('/api/articles/2/comments')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).toBe(0)
+            });
+        });
+        test(`uses an extra verification step to return a status of 404 if article id doesn't exist`, () => {
+            return request(app).get('/api/articles/9001/comments')
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Not Found")
+            });
+        });
+        test(`uses an extra verification step to return a status of 400 if article id is not a number`, () => {
+            return request(app).get('/api/articles/cats/comments')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request")
+            });
+        });
+    });
+});
