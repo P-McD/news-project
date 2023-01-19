@@ -3,7 +3,8 @@ const {
     fetchArticles,
     fetchArticleById,
     fetchCommentByArticle,
-    createComment
+    createComment,
+    fetchUsers
 
 } = require('./model');
 
@@ -57,10 +58,21 @@ const postComment = (request, response, next) => {
         next(err)
     });
 };
+
+const getUsers = (request, response, next) => {
+    fetchUsers().then((users) => {
+        return response.status(200).send(users)
+    })
+    .catch((err) => {
+        next(err);
+    });
+};
+
 module.exports = {
     getTopics,
     getArticles,
     getArticleById,
     getCommentByArticle,
-    postComment
+    postComment, 
+    getUsers
 };

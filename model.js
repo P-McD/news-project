@@ -122,6 +122,23 @@ const createComment = (article_id, sentComment) => {
 })
 };
 
- 
+const fetchUsers = () => {
+    const fetchUsersStr = `
+    SELECT * FROM users;`
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentByArticle, createComment};
+    return db.query(fetchUsersStr)
+    .then(({rows}) => {
+        if (rows.length > 0) {
+            return rows;
+        } else {
+            return Promise.reject({status : 404, msg : "Not Found"});
+        };
+    });
+};
+
+module.exports = { fetchTopics, 
+    fetchArticles, 
+    fetchArticleById, 
+    fetchCommentByArticle, 
+    createComment,
+    fetchUsers};
