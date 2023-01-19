@@ -18,7 +18,8 @@ const getTopics = (request, response, next) => {
 };
 
 const getArticles = (request, response, next) => {
-    fetchArticles().then((articles) => {
+    const {topic, sort_by, order} = request.query;
+    fetchArticles(topic, sort_by, order).then((articles) => {
         response.status(200).send(articles)
     })
     .catch((err) => {

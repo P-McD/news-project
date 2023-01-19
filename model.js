@@ -17,16 +17,33 @@ const fetchTopics = () => {
     });
 };
 
-const fetchArticles = () => {
+const fetchArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
+    const sortByGreenlist = ['title', 'topic', 'author', 'created_at', 'article_id', 'votes', 'body', 'article_img_url'];
+
+    const orderGreenlist = ['ASC', 'DESC'];
+
+    let queryValue = [];
+
+    if(!sortByGreenlist.includes(sort_by) || !orderGreenlist.includes(order)) {
+        return Promise.reject({status: 400, msg: "Bad Request"})
+    }
     let fetchArticlesStr = `
     SELECT articles.*, COUNT(comments.article_id) 
     AS comment_count
     FROM articles
     LEFT JOIN comments ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC
     `;
-    return db.query(fetchArticlesStr)
+    
+    if(topic) {
+        fetchArticlesStr += `WHERE articles.topic = $1`
+        queryValue.push(topic);
+    };
+
+    fetchArticlesStr += `GROUP BY articles.article_id
+    ORDER BY ${sort_by} ${order};`
+
+    console.log(fetchArticlesStr);
+    return db.query(fetchArticlesStr, queryValue)
     .then(({rows}) => {
         if (rows.length > 0) {
             return rows;
