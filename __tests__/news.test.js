@@ -125,6 +125,82 @@ describe('/api/articles/:article_id', () => {
             });
         });
     });
+    describe('PATCH votes on an article', () => {
+        test('returns the correct article with incremented votes when given the correct id', () =>{ 
+            return request(app).patch('/api/articles/5')
+            .expect(200)
+            .send(
+                { inc_votes : 30 }
+                )
+            .then(({body}) => {
+                expect(body).toMatchObject({
+                    article_id : 5,
+                    title : expect.any(String),
+                    topic : expect.any(String),
+                    votes: 30,
+                    created_at : expect.any(String),
+                    author : expect.any(String),
+                    body : expect.any(String),
+                    article_img_url: expect.any(String)
+                });
+            });
+        });
+        test('returns the article with a negative value of votes if the value of inc_votes ia a negative number', () =>{ 
+            return request(app).patch('/api/articles/5')
+            .expect(200)
+            .send(
+                { inc_votes : -22 }
+                )
+            .then(({body}) => {
+                expect(body.article_id).toBe(5);
+                expect(body.votes).toBe(-22);
+            });
+        });
+        test('returns a 400 error if inc_votes is not a number', () =>{ 
+            return request(app).patch('/api/articles/5')
+            .expect(400)
+            .send(
+                { inc_votes : 'cats' }
+                )
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request")
+            });
+        });
+        test('returns a 400 error if article_id is not a number', () =>{ 
+            return request(app).patch('/api/articles/cats')
+            .expect(400)
+            .send(
+                { inc_votes : 2 }
+                )
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request")
+            });
+        });
+        test('returns a 400 error if nothing is sent', () =>{ 
+            return request(app).patch('/api/articles/cats')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request")
+            });
+        });
+        test('returns a 400 error if an empty object is sent', () =>{ 
+            return request(app).patch('/api/articles/cats')
+            .expect(400)
+            .send({})
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request")
+            });
+        });
+        test('returns a 404 error if the article id is a number but does not exist', () =>{ 
+            return request(app).patch('/api/articles/9001')
+            .expect(404)
+            .send(
+                { inc_votes : 2} )
+            .then(({body}) => {
+                expect(body.msg).toBe("Not Found")
+            });
+        });
+    });
 });
 
 describe('/api/invalid_path', () => {
