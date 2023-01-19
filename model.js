@@ -122,6 +122,20 @@ const createComment = (article_id, sentComment) => {
 })
 };
 
+const fetchUsers = () => {
+    const fetchUsersStr = `
+    SELECT * FROM users;`
+
+    return db.query(fetchUsersStr)
+    .then(({rows}) => {
+        if (rows.length > 0) {
+            return rows;
+        } else {
+            return Promise.reject({status : 404, msg : "Not Found"});
+        };
+    });
+};
+
 const updateArticleVotes = (article_id, votesBody) => {
     const doesArticleExistStr = `
     SELECT * FROM articles
@@ -158,5 +172,6 @@ module.exports = {
     fetchArticleById, 
     fetchCommentByArticle, 
     createComment,
+    fetchUsers,
     updateArticleVotes
 };

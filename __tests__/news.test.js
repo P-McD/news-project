@@ -335,3 +335,30 @@ describe('/api/articles/:article_id/comments', () => {
     })
 })
 });
+
+describe('/api/users', () => {
+    describe('GET users', () => {
+        test('returns an array which is greater than length 0', () => {
+            return request(app).get('/api/users')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).not.toBe(0);
+            });
+        });
+        test('returns all users as an array of objects with the appropriate properties', () => {
+            return request(app).get('/api/users')
+            .expect(200)
+            .then(({body}) => {
+                body.forEach((user) => {
+                    expect(user).toMatchObject(
+                        { 
+                        username : expect.any(String),
+                        name : expect.any(String),
+                        avatar_url : expect.any(String)
+                        }
+                    );
+                });
+            });
+        });
+    });
+});
