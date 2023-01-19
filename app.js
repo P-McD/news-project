@@ -22,16 +22,11 @@ app.get('/api/articles/:article_id/comments', getCommentByArticle);
 
 app.get('/api/users', getUsers);
 
-
-
-app.post('/api/articles/:article_id/comments', postComment)
-
-
-
+app.post('/api/articles/:article_id/comments', postComment);
 
 app.use((request, response, next) => {
     response.status(404).send({msg : "Not Found"})
-})
+});
 
 app.use((err, request, response, next) => {
     if(err.status){
@@ -45,6 +40,6 @@ app.use((err, request, response, next) => {
 app.use((err, request, response, next) => {
     console.log(err, "<- Internal error handler")
     response.status(500).send({msg : "Problem in code"})
-  })
+  });
 
 module.exports = app;
