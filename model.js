@@ -136,9 +136,42 @@ const fetchUsers = () => {
     });
 };
 
-module.exports = { fetchTopics, 
+const updateArticleVotes = (article_id, votesBody) => {
+    const doesArticleExistStr = `
+    SELECT * FROM articles
+    WHERE article_id = $1;
+    `;
+    return db.query(doesArticleExistStr, [article_id])
+    .then(({rows}) => {
+        if (rows.length === 0) {
+            return Promise.reject({status : 404, msg : "Not Found"})
+        };
+    })
+    .then(() => {
+        const incrementVotes = votesBody.inc_votes
+        const updateVotesStr = `
+        UPDATE articles
+        SET
+        votes = votes + $2
+        WHERE article_id = $1
+        RETURNING *;
+        `;
+        return db.query(updateVotesStr, [article_id, incrementVotes])
+    })
+    .then(({rows}) => {
+        if (rows) {
+            return rows[0]
+        }
+    })
+}
+ 
+
+module.exports = { 
+    fetchTopics, 
     fetchArticles, 
     fetchArticleById, 
     fetchCommentByArticle, 
     createComment,
-    fetchUsers};
+    fetchUsers,
+    updateArticleVotes
+};

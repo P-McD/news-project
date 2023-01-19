@@ -4,8 +4,8 @@ const {
     fetchArticleById,
     fetchCommentByArticle,
     createComment,
-    fetchUsers
-
+    fetchUsers,
+    updateArticleVotes
 } = require('./model');
 
 const getTopics = (request, response, next) => {
@@ -68,11 +68,24 @@ const getUsers = (request, response, next) => {
     });
 };
 
+const patchArticleVotes = (request, response, next) => {
+    const { article_id } = request.params;
+    const votesBody = request.body;
+    updateArticleVotes(article_id, votesBody)
+    .then((returnedVotes) => {
+        return response.status(200).send(returnedVotes)
+    })
+    .catch((err) => {
+        next(err)
+    });
+};
+
 module.exports = {
     getTopics,
     getArticles,
     getArticleById,
     getCommentByArticle,
     postComment, 
-    getUsers
+    getUsers,
+    patchArticleVotes
 };

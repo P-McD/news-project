@@ -6,7 +6,8 @@ const {
     getArticleById, 
     getCommentByArticle, 
     postComment,
-    getUsers }  = require("./controller")
+    getUsers,
+    patchArticleVotes }  = require("./controller")
 
 app.use(express.json());
 
@@ -24,9 +25,21 @@ app.get('/api/users', getUsers);
 
 app.post('/api/articles/:article_id/comments', postComment);
 
+app.patch('/api/articles/:article_id', patchArticleVotes);
+
+
 app.use((request, response, next) => {
     response.status(404).send({msg : "Not Found"})
 });
+
+app.use((err, request, response, next) => {
+    if(err.code === "22P02" || err.code === "23503") {
+      console.log(err, 'PG Error')
+      response.status(400).send({msg : "Bad Request"})
+    } else {
+      next(err);
+    };
+  });
 
 app.use((err, request, response, next) => {
     if(err.status){
