@@ -63,8 +63,9 @@ const fetchComByArt = (article_id) => {
 };
 
 const createComment = (article_id, sentComment) => {
-
-    
+    if(isNaN(article_id)) {
+        return Promise.reject({status : 400, msg : "Bad Request"})
+     };
     if(!sentComment || !sentComment.body || !sentComment.username) {
         return Promise.reject({status : 400, msg: "Bad Request"})
     };

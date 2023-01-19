@@ -219,6 +219,17 @@ describe('/api/articles/:article_id/comments', () => {
                 expect(body.msg).toBe("Bad Request");
             });
         });
+        test('returns a 400 error if an attempt is made to post to an article id which is not a number', () => {
+            return request(app).post('/api/articles/cats/comments')
+            .expect(400)
+            .send({ 
+                username : 'rogersop',
+                body: 'Can I post this way?'
+            })
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad Request");
+            });
+        });
         test('returns a 404 error if the username is not found', () => {
             return request(app).post('/api/articles/2/comments')
             .expect(404)
