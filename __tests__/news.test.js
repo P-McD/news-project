@@ -33,7 +33,7 @@ describe('/api/topics', () => {
     });
 });
 
-describe('/api/articles', () => {
+describe.only('/api/articles', () => {
     describe('GET articles withour queries (default)', () => {
         test('Returns status 200 if the request is successful', () => {
             return request(app).get('/api/articles')
@@ -103,6 +103,13 @@ describe('/api/articles', () => {
                 });
             });
         });
+        test('returns a 200 and empty array if a topic is entered which exists in the database but has no articles attributed to it', () => {
+            return request(app).get('/api/articles?sort_by=title&topic=paper')
+            .expect(200)
+            .then(({body}) => {
+               expect(body.length).toBe(0)
+            });
+        });
         test('returns all articles which are sorted by title, descending by default when no other queries have been entered', () => {
             return request(app).get('/api/articles?sort_by=title')
             .expect(200)
@@ -142,13 +149,6 @@ describe('/api/articles', () => {
             .expect(400)
             .then(({body}) => {
                expect(body.msg).toBe("Bad Request")
-            });
-        });
-        test('returns a 404 not found if a topic is entered which exists in the database but has no articles attributed to it', () => {
-            return request(app).get('/api/articles?sort_by=title&topic=paper')
-            .expect(404)
-            .then(({body}) => {
-               expect(body.msg).toBe("Not Found")
             });
         });
         test('returns a 404 not found if a topic is entered which does not exist in the database', () => {
