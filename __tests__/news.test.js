@@ -33,8 +33,8 @@ describe('/api/topics', () => {
     });
 });
 
-describe('/api/articles', () => {
-    describe('GET articles', () => {
+describe.only('/api/articles', () => {
+    describe('GET articles withour queries (default)', () => {
         test('Returns status 200 if the request is successful', () => {
             return request(app).get('/api/articles')
             .expect(200);
@@ -92,7 +92,74 @@ describe('/api/articles', () => {
             });
         });
     });
-})
+    describe('GET using queries', () => {
+        test('returns all results which have a specified topic', () => {
+            return request(app).get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).toBe(11)
+                body.forEach((article) => {
+                    expect(article.topic).toBe('mitch')
+                });
+            });
+        });
+        test('returns a 200 and empty array if a topic is entered which exists in the database but has no articles attributed to it', () => {
+            return request(app).get('/api/articles?sort_by=title&topic=paper')
+            .expect(200)
+            .then(({body}) => {
+               expect(body.length).toBe(0)
+            });
+        });
+        test('returns all articles which are sorted by title, descending by default when no other queries have been entered', () => {
+            return request(app).get('/api/articles?sort_by=title')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).not.toBe(0);
+                expect(body).toBeSortedBy('title', {descending : true})
+            });
+        });
+        test('returns all articles which are sorted by author, ascending', () => {
+            return request(app).get('/api/articles?sort_by=author&order=ASC')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).not.toBe(0);
+                expect(body).toBeSortedBy('author', {descending : false})
+            });
+        });
+        test('returns all articles which are sorted by author, ascending with a topic of cats', () => {
+            return request(app).get('/api/articles?sort_by=author&order=ASC&topic=cats')
+            .expect(200)
+            .then(({body}) => {
+                expect(body.length).toBe(1);
+                body.forEach((article) => {
+                    expect(article.topic).toBe('cats')
+                })
+                expect(body).toBeSortedBy('author', {descending : false})
+            });
+        });
+        test('returns a 400 bad request error if attempting to sort by an invalid value', () => {
+            return request(app).get('/api/articles?sort_by=secretvalue&order=ASC&topic=cats')
+            .expect(400)
+            .then(({body}) => {
+               expect(body.msg).toBe("Bad Request")
+            });
+        });
+        test('returns a 400 bad request error if attempting to order by an invalid value', () => {
+            return request(app).get('/api/articles?sort_by=title&order=whoops&topic=cats')
+            .expect(400)
+            .then(({body}) => {
+               expect(body.msg).toBe("Bad Request")
+            });
+        });
+        test('returns a 404 not found if a topic is entered which does not exist in the database', () => {
+            return request(app).get('/api/articles?sort_by=title&topic=anythingButMitch')
+            .expect(404)
+            .then(({body}) => {
+               expect(body.msg).toBe("Not Found")
+            });
+        });
+    });
+});
 
 describe('/api/articles/:article_id', () => {
     describe('GET articles by article ID', () => {
@@ -209,9 +276,9 @@ describe('/api/invalid_path', () => {
         .expect(404)
         .then(({body}) => {
             expect(body.msg).toBe("Not Found")
-        })
-    })
-})
+        });
+    });
+});
 
 describe('/api/articles/:article_id/comments', () => {
     describe('GET comments by article id', () => {
@@ -321,7 +388,7 @@ describe('/api/articles/:article_id/comments', () => {
             .then(({body}) => {
                 expect(body.msg).toBe("Not Found");
             });
-        })
+        });
         test('returns a 404 error if the article is not found', () => {
             return request(app).post('/api/articles/9001/comments')
             .expect(404)
