@@ -33,7 +33,7 @@ describe('/api/topics', () => {
     });
 });
 
-describe.only('/api/articles', () => {
+describe('/api/articles', () => {
     describe('GET articles withour queries (default)', () => {
         test('Returns status 200 if the request is successful', () => {
             return request(app).get('/api/articles')
