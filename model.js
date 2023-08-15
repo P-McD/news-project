@@ -1,6 +1,4 @@
 const db = require("./db/connection");
-const { commentData } = require("./db/data/test-data");
-const articles = require("./db/data/test-data/articles");
 
 const fetchTopics = () => {
   let fetchTopicsStr = `
@@ -10,7 +8,7 @@ const fetchTopics = () => {
     if (rows.length > 0) {
       return rows;
     } else {
-      return Promise.reject({ status: 404, msg: "Not Found" });
+      return Promise.reject(error);
     }
   });
 };
@@ -213,5 +211,4 @@ module.exports = {
     createComment,
     fetchUsers,
     updateArticleVotes
-
 };

@@ -43,9 +43,7 @@ const getCommentByArticle = (request, response, next) => {
     .then((returnedComment) => {
         response.status(200).send(returnedComment)
     })
-    .catch((err) => {
-        next(err)
-    });
+    .catch(next);
 };
 
 const postComment = (request, response, next) => {
@@ -55,9 +53,7 @@ const postComment = (request, response, next) => {
     .then((returnedObj) => {
         response.status(201).send(returnedObj)
     })
-    .catch((err) => {
-        next(err)
-    });
+    .catch((next));
 };
 
 const getUsers = (request, response, next) => {
